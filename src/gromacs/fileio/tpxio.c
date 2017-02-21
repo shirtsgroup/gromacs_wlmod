@@ -93,7 +93,8 @@ enum tpxv {
     tpxv_RemoveObsoleteParameters1,                          /**< remove optimize_fft, dihre_fc, nstcheckpoint */
     tpxv_PullCoordTypeGeom,                                  /**< add pull type and geometry per group and flat-bottom */
     tpxv_PullGeomDirRel,                                     /**< add pull geometry direction-relative */
-    tpxv_IntermolecularBondeds                               /**< permit inter-molecular bonded interactions in the topology */
+    tpxv_IntermolecularBondeds,                               /**< permit inter-molecular bonded interactions in the topology */
+    tpxv_InputHistogramCounts                                /**< can input histogram counts > */
 };
 
 /*! \brief Version number of the file format written to run input
@@ -107,7 +108,7 @@ enum tpxv {
  *
  * When developing a feature branch that needs to change the run input
  * file format, change tpx_tag instead. */
-static const int tpx_version = tpxv_IntermolecularBondeds;
+static const int tpx_version = tpxv_InputHistogramCounts;
 
 
 /* This number should only be increased when you edit the TOPOLOGY section
@@ -353,7 +354,18 @@ static void do_expandedvals(t_fileio *fio, t_expanded *expand, t_lambda *fepvals
             gmx_fio_ndo_real(fio, expand->init_lambda_weights, n_lambda);
             gmx_fio_do_gmx_bool(fio, expand->bInit_weights);
         }
-
+		if (file_version >= 104)
+		{
+			if (n_lambda > 0)
+			{
+				if (bRead)
+				{
+					snew(expand->init_histogram_counts, n_lambda);
+				}
+				gmx_fio_ndo_real(fio, expand->init_histogram_counts, n_lambda);
+				gmx_fio_do_gmx_bool(fio, expand->bInit_counts);
+			}
+	    }
         gmx_fio_do_int(fio, expand->nstexpanded);
         gmx_fio_do_int(fio, expand->elmcmove);
         gmx_fio_do_int(fio, expand->elamstats);

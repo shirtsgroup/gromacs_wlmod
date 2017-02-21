@@ -702,7 +702,9 @@ static void pr_expandedvals(FILE *fp, int indent, t_expanded *expand, int n_lamb
 
     pr_indent(fp, indent);
     pr_rvec(fp, indent, "init-lambda-weights", expand->init_lambda_weights, n_lambda, TRUE);
+    pr_rvec(fp, indent, "init-histogram-counts", expand->init_histogram_counts, n_lambda, TRUE);
     PS("init-weights", EBOOL(expand->bInit_weights));
+    PS("init-counts", EBOOL(expand->bInit_counts));
 }
 
 static void pr_fepvals(FILE *fp, int indent, t_lambda *fep, gmx_bool bMDPformat)
