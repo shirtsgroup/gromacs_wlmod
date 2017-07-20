@@ -617,8 +617,11 @@ static void bc_expandedvals(const t_commrec *cr, t_expanded *expand, int n_lambd
     block_bc(cr, expand->wl_ratio);
     block_bc(cr, expand->init_wl_delta);
     block_bc(cr, expand->bInit_weights);
+	block_bc(cr, expand->bInit_counts);
     snew_bc(cr, expand->init_lambda_weights, n_lambda);
     nblock_bc(cr, n_lambda, expand->init_lambda_weights);
+	snew_bc(cr, expand->init_histogram_counts, n_lambda);
+	nblock_bc(cr, n_lambda, expand->init_histogram_counts);
     block_bc(cr, expand->mc_temp);
     if (debug)
     {

@@ -104,6 +104,7 @@ typedef struct t_inputrec_strings
          imd_grp[STRLEN];
     char   fep_lambda[efptNR][STRLEN];
     char   lambda_weights[STRLEN];
+	char   histogram_counts[STRLEN];
     char **pull_grp;
     char **rot_grp;
     char   anneal[STRLEN], anneal_npoints[STRLEN],
@@ -1469,10 +1470,10 @@ static void parse_n_real(char *str, int *n, real **r, warninp_t wi)
     }
 }
 
-static void do_fep_params(t_inputrec *ir, char fep_lambda[][STRLEN], char weights[STRLEN], warninp_t wi)
+static void do_fep_params(t_inputrec *ir, char fep_lambda[][STRLEN], char weights[STRLEN], char counts[STRLEN], warninp_t wi)
 {
 
-    int         i, j, max_n_lambda, nweights, nfep[efptNR];
+    int         i, j, max_n_lambda, nweights, ncounts, nfep[efptNR];
     t_lambda   *fep    = ir->fepvals;
     t_expanded *expand = ir->expandedvals;
     real      **count_fep_lambdas;
@@ -1631,6 +1632,17 @@ static void do_fep_params(t_inputrec *ir, char fep_lambda[][STRLEN], char weight
         expand->nstexpanded = 2*(int)(ir->opts.tau_t[0]/ir->delta_t);
         /* if you don't specify nstexpanded when doing expanded ensemble simulated tempering, it is set to
            2*tau_t just to be careful so it's not to frequent  */
+    }
+    /* now read in the histogram counts */
+    parse_n_real(counts, &ncounts, &(expand->init_histogram_counts), wi);
+    if (ncounts == 0)
+    {
+        snew(expand->init_histogram_counts, fep->n_lambda); /* initialize to zero */
+    }
+    else if (ncounts != fep->n_lambda)
+    {
+        gmx_fatal(FARGS, "Number of histogram_counts (%d) is not equal to number of lambda values (%d)",
+                  ncounts, fep->n_lambda);
     }
 }
 
@@ -2205,6 +2217,7 @@ void get_ir(const char *mdparin, const char *mdparout,
     STYPE ("temperature-lambdas", is->fep_lambda[efptTEMPERATURE], nullptr);
     ITYPE ("calc-lambda-neighbors", fep->lambda_neighbors, 1);
     STYPE ("init-lambda-weights", is->lambda_weights, nullptr);
+	STYPE ("init-histogram-counts", is->histogram_counts, NULL);
     EETYPE("dhdl-print-energy", fep->edHdLPrintEnergy, edHdLPrintEnergy_names);
     RTYPE ("sc-alpha", fep->sc_alpha, 0.0);
     ITYPE ("sc-power", fep->sc_power, 1);
@@ -2510,7 +2523,7 @@ void get_ir(const char *mdparin, const char *mdparout,
         {
             ir->bExpanded = TRUE;
         }
-        do_fep_params(ir, is->fep_lambda, is->lambda_weights, wi);
+		do_fep_params(ir, is->fep_lambda, is->lambda_weights, is->histogram_counts, wi);
         if (ir->bSimTemp) /* done after fep params */
         {
             do_simtemp_params(ir);

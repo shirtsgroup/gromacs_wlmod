@@ -153,8 +153,10 @@ typedef struct t_expanded {
     real     init_wl_delta;       /* starting delta for wang-landau */
     gmx_bool bWLoneovert;         /* use one over t convergece for wang-landau when the delta get sufficiently small */
     gmx_bool bInit_weights;       /* did we initialize the weights? TODO: REMOVE FOR 5.0, no longer needed with new logic */
+	gmx_bool bInit_counts;        /* did we initialize the counts? TODO: REMOVE FOR 5.0, no longer needed with new logic */
     real     mc_temp;             /* To override the main temperature, or define it if it's not defined */
     real    *init_lambda_weights; /* user-specified initial weights to start with  */
+    real    *init_histogram_counts; /* user-specified initial histogram counts to start with  */
 } t_expanded;
 
 

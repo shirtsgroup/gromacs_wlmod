@@ -115,6 +115,7 @@ enum tpxv {
     tpxv_ReplacePullPrintCOM12,                              /**< Replaced print-com-1, 2 with pull-print-com */
     tpxv_PullExternalPotential,                              /**< Added pull type external potential */
     tpxv_GenericParamsForElectricField,                      /**< Introduced KeyValueTree and moved electric field parameters */
+    tpxv_InputHistogramCounts,                               /**< can input histogram counts > */
     tpxv_Count                                               /**< the total number of tpxv versions */
 };
 
@@ -390,6 +391,18 @@ static void do_expandedvals(t_fileio *fio, t_expanded *expand, t_lambda *fepvals
             gmx_fio_ndo_real(fio, expand->init_lambda_weights, n_lambda);
             gmx_fio_do_gmx_bool(fio, expand->bInit_weights);
         }
+		if (file_version >= tpxv_InputHistogramCounts)
+		{
+			if (n_lambda > 0)
+			{
+				if (bRead)
+				{
+					snew(expand->init_histogram_counts, n_lambda);
+				}
+				gmx_fio_ndo_real(fio, expand->init_histogram_counts, n_lambda);
+				gmx_fio_do_gmx_bool(fio, expand->bInit_counts);
+			}
+	    }
 
         gmx_fio_do_int(fio, expand->nstexpanded);
         gmx_fio_do_int(fio, expand->elmcmove);
