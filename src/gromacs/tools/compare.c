@@ -682,12 +682,19 @@ static void cmp_expandedvals(FILE *fp, t_expanded *expand1, t_expanded *expand2,
     int i;
 
     cmp_bool(fp, "inputrec->fepvals->bInit_weights", -1, expand1->bInit_weights, expand2->bInit_weights);
+    cmp_bool(fp, "inputrec->fepvals->bInit_counts", -1, expand1->bInit_counts, expand2->bInit_counts);
     cmp_bool(fp, "inputrec->fepvals->bWLoneovert", -1, expand1->bWLoneovert, expand2->bWLoneovert);
 
     for (i = 0; i < n_lambda; i++)
     {
         cmp_real(fp, "inputrec->expandedvals->init_lambda_weights", -1,
                  expand1->init_lambda_weights[i], expand2->init_lambda_weights[i], ftol, abstol);
+    }
+
+    for (i = 0; i < n_lambda; i++)
+    {
+        cmp_real(fp, "inputrec->expandedvals->init_histogram_counts", -1,
+                 expand1->init_histogram_counts[i], expand2->init_histogram_counts[i], ftol, abstol);
     }
 
     cmp_int(fp, "inputrec->expandedvals->lambda-stats", -1, expand1->elamstats, expand2->elamstats);
